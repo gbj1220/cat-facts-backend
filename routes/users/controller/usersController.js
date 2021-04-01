@@ -1,4 +1,6 @@
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
 const User = require("../model/User");
 const mongoDBErrorParser = require("../../lib/mongoDBErrorParser");
 
@@ -23,7 +25,39 @@ module.exports = {
         data: savedUser,
       });
     } catch (e) {
-      console.log(e);
+      res.status(500).json(mongoDBErrorParser(e));
+    }
+  },
+
+  login: async (req, res) => {
+    try {
+      let foundUser = await User.findOne({ email: req.body.email });
+
+      if (!foundUser) {
+        throw { message: "Please register your email to login." };
+      }
+
+      let comparedPassword = await bcrypt.compare(
+        req.body.password,
+        foundUser.password
+      );
+
+      if (!comparedPassword) {
+        throw { message: "Email is not registered. Please register to login." };
+      } else {
+        let jwtToken = jwt.sign(
+          {
+            email: foundUser.email,
+          },
+          process.env.JWT_VERY_SECRET,
+          { expiresIn: "8h" }
+        );
+
+        res.json({
+          jwtToken: jwtToken,
+        });
+      }
+    } catch (e) {
       res.status(500).json(mongoDBErrorParser(e));
     }
   },

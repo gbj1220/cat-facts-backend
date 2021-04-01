@@ -1,7 +1,13 @@
 const express = require("express");
 const router = express.Router();
 
-const { signUp } = require("./controller/usersController");
+const { signUp, login } = require("./controller/usersController");
+
+const {
+  checkIfInputIsEmpty,
+  checkForSymbolsMiddleWare,
+  checkIfLoginIsEmpty,
+} = require("../lib/validator");
 
 router.get("/", function (req, res, next) {
   res.render("index", { title: "Express" });
@@ -9,4 +15,6 @@ router.get("/", function (req, res, next) {
 
 module.exports = router;
 
-router.post("/sign-up", signUp);
+router.post("/sign-up", checkIfInputIsEmpty, checkForSymbolsMiddleWare, signUp);
+
+router.post("/login", checkIfLoginIsEmpty, login);
