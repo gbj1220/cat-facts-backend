@@ -1,3 +1,4 @@
+const nodemailer = require("nodemailer");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -60,5 +61,31 @@ module.exports = {
     } catch (e) {
       res.status(500).json(mongoDBErrorParser(e));
     }
+  },
+
+  sendEmail: async (req, res) => {
+    "use strict";
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "gepflue@gwenbd94.com",
+        pass: "",
+      },
+    });
+
+    const mailOptions = {
+      from: "gepflue@gwenbd94.com",
+      to: "gregory.johnson@code-immersives.com",
+      subject: "Sending Email using Node.js",
+      text: "That was easy!",
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
   },
 };
