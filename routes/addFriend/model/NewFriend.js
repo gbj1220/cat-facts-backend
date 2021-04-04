@@ -1,4 +1,3 @@
-const { text } = require("express");
 const mongoose = require("mongoose");
 
 const NewFriendSchema = new mongoose.Schema({
@@ -14,14 +13,10 @@ const NewFriendSchema = new mongoose.Schema({
     required: true,
   },
 
-  email: {
+  mobileNumber: {
     type: String,
     trim: true,
     required: true,
-  },
-
-  text: {
-    type: String,
   },
 });
 

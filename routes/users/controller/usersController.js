@@ -1,6 +1,12 @@
-const nodemailer = require("nodemailer");
+const NewFriend = require("../../addFriend/model/NewFriend");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const axios = require("axios");
+
+require("dotenv").config();
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = require("twilio")(accountSid, authToken);
 
 const User = require("../model/User");
 const mongoDBErrorParser = require("../../lib/mongoDBErrorParser");
@@ -63,29 +69,19 @@ module.exports = {
     }
   },
 
-  sendEmail: async (req, res) => {
-    "use strict";
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "gepflue@gwenbd94.com",
-        pass: "",
-      },
-    });
+  sendSMS: async (req, res) => {
+    console.log(this.userData);
+    try {
+      const sentSMS = await client.messages.create({
+        body: "getCatFact",
+        from: "+14787969053",
+        to: this.userData,
+      });
 
-    const mailOptions = {
-      from: "gepflue@gwenbd94.com",
-      to: "gregory.johnson@code-immersives.com",
-      subject: "Sending Email using Node.js",
-      text: "That was easy!",
-    };
-
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Email sent: " + info.response);
-      }
-    });
+      res.json(sentSMS);
+    } catch (e) {
+      console.log(e);
+      res.status(500).json(mongoDBErrorParser(e));
+    }
   },
 };

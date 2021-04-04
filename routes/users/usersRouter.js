@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { signUp, login, sendEmail } = require("./controller/usersController");
+const { signUp, login, sendSMS } = require("./controller/usersController");
 
 const {
   checkIfInputIsEmpty,
@@ -15,7 +15,9 @@ router.get("/", function (req, res, next) {
 
 module.exports = router;
 
-router.post("/send-email", sendEmail);
+router.get("/get-cat-fact");
+
+router.post("/send-sms", sendSMS);
 
 router.post("/sign-up", checkIfInputIsEmpty, checkForSymbolsMiddleWare, signUp);
 

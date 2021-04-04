@@ -5,12 +5,12 @@ const jwt = require("jsonwebtoken");
 
 const createNewFriend = async (req, res) => {
   try {
-    const { firstName, lastName, email } = req.body;
+    const { firstName, lastName, mobileNumber } = req.body;
 
     const newFriend = await new NewFriend({
       firstName,
       lastName,
-      email,
+      mobileNumber,
     });
 
     const savedNewFriend = await newFriend.save();
