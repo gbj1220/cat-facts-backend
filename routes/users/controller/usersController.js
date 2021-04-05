@@ -72,8 +72,14 @@ module.exports = {
   sendSMS: async (req, res) => {
     console.log(req.body);
     try {
+      const allCatFacts = await axios.get(
+        "https://cat-fact.herokuapp.com/facts/random"
+      );
+
+      const oneCatFact = allCatFacts.data.text;
+
       const sentSMS = await client.messages.create({
-        body: req.body.catFact,
+        body: oneCatFact,
         from: "+14787969053",
         to: req.body.allMobileNumbers,
       });
