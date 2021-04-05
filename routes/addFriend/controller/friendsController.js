@@ -25,7 +25,7 @@ const createNewFriend = async (req, res) => {
 
     await targetUser.save();
 
-    res.json(savedNewFriend);
+    res.json(targetUser);
   } catch (e) {
     res.status(500).json(mongoDBErrorParser(e));
   }
@@ -33,19 +33,48 @@ const createNewFriend = async (req, res) => {
 
 const getFriendsList = async (req, res) => {
   try {
-    let jwtToken = req.headers.authorization.slice(7);
+    const jwtToken = req.headers.authorization.slice(7);
 
-    let decodedToken = jwt.verify(jwtToken, process.env.JWT_VERY_SECRET);
+    const decodedToken = jwt.verify(jwtToken, process.env.JWT_VERY_SECRET);
 
     const payload = await User.findOne({ email: decodedToken.email })
       .populate({
         path: "friends",
         model: NewFriend,
-        select: "-_id -__v",
+        select: " -__v",
       })
-      .select("-email -password -firstName -lastName -__v -_id");
+      .select("-email -password -firstName -lastName -__v ");
     console.log(payload);
     res.json(payload);
+  } catch (e) {
+    console.log(e.message);
+    res.status(500).json(mongoDBErrorParser(e));
+  }
+};
+
+const deleteFriendById = async (req, res) => {
+  try {
+    const deletedFriend = await NewFriend.findByIdAndDelete({
+      _id: req.params.id,
+    });
+
+    const foundUser = await User.findById({
+      _id: req.body.userID,
+    });
+    let newUserArray = foundUser.friends;
+
+    let newFriendArray = newUserArray.filter((item) => {
+      if (item !== req.params.id) {
+        return item;
+      }
+    });
+    foundUser.friends = newFriendArray;
+
+    await foundUser.save();
+
+    res.json({
+      Successfully_Deleted: deletedFriend,
+    });
   } catch (e) {
     res.status(500).json(mongoDBErrorParser(e));
   }
@@ -54,4 +83,7 @@ const getFriendsList = async (req, res) => {
 module.exports = {
   createNewFriend,
   getFriendsList,
+  deleteFriendById,
 };
+//userID = 606a43b951095782bff2d631
+//friendID = 606a43d951095782bff2d632
