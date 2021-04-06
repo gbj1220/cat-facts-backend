@@ -40,11 +40,10 @@ const getFriendsList = async (req, res) => {
     const payload = await User.findOne({ email: decodedToken.email })
       .populate({
         path: "friends",
-        model: NewFriend,
+        model: "newFriend",
         select: " -__v",
       })
       .select("-email -password -firstName -lastName -__v ");
-    console.log(payload);
     res.json(payload);
   } catch (e) {
     console.log(e.message);
@@ -59,16 +58,22 @@ const deleteFriendById = async (req, res) => {
     });
 
     const foundUser = await User.findById({
-      _id: req.body.userID,
+      _id: req.body.id,
     });
-    let newUserArray = foundUser.friends;
+    const userFriendsArray = foundUser.friends;
 
-    let newFriendArray = newUserArray.filter((item) => {
-      if (item !== req.params.id) {
+    const newFriendArray = userFriendsArray.filter((item) => {
+      console.log(item !== req.params.id);
+      console.log(item, req.params.id);
+      console.log(typeof item);
+      console.log(typeof req.params.id);
+      if (item.toString() !== req.params.id) {
         return item;
       }
     });
+    console.log(newFriendArray);
     foundUser.friends = newFriendArray;
+    console.log(foundUser);
 
     await foundUser.save();
 
@@ -76,6 +81,7 @@ const deleteFriendById = async (req, res) => {
       Successfully_Deleted: deletedFriend,
     });
   } catch (e) {
+    console.log();
     res.status(500).json(mongoDBErrorParser(e));
   }
 };
@@ -85,5 +91,3 @@ module.exports = {
   getFriendsList,
   deleteFriendById,
 };
-//userID = 606a43b951095782bff2d631
-//friendID = 606a43d951095782bff2d632
