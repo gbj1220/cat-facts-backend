@@ -57,16 +57,16 @@ const deleteFriendById = async (req, res) => {
       _id: req.params.id,
     });
 
-    const foundUser = await User.findById({
-      _id: req.body.id,
+    const foundUser = await User.findOne({
+      email: req.body.email,
     });
     const userFriendsArray = foundUser.friends;
 
     const newFriendArray = userFriendsArray.filter((item) => {
-      console.log(item !== req.params.id);
-      console.log(item, req.params.id);
-      console.log(typeof item);
-      console.log(typeof req.params.id);
+      // console.log(item !== req.params.id);
+      // console.log(item, req.params.id);
+      // console.log(typeof item);
+      // console.log(typeof req.params.id);
       if (item.toString() !== req.params.id) {
         return item;
       }
@@ -81,7 +81,6 @@ const deleteFriendById = async (req, res) => {
       Successfully_Deleted: deletedFriend,
     });
   } catch (e) {
-    console.log();
     res.status(500).json(mongoDBErrorParser(e));
   }
 };

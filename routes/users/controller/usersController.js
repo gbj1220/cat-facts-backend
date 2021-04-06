@@ -70,12 +70,14 @@ module.exports = {
   },
 
   sendSMS: async (req, res) => {
-    console.log(req.body.allMobileNumbers);
+    console.log("-------");
+    console.log(req.body);
+
     try {
       const sentSMS = await client.messages.create({
-        body: req.body.oneCatFact,
+        body: "Hello",
         from: "+14787969053",
-        to: req.body.allMobileNumbers,
+        to: "14128628882",
       });
       console.log("Message Sent!");
       res.json(sentSMS);
