@@ -33,6 +33,7 @@ module.exports = {
       });
     } catch (e) {
       res.status(500).json(mongoDBErrorParser(e));
+      console.log("backend-------36");
     }
   },
 
@@ -41,7 +42,10 @@ module.exports = {
       let foundUser = await User.findOne({ email: req.body.email });
 
       if (!foundUser) {
-        throw { message: "Please register your email to login." };
+        throw {
+          message:
+            "Email is not registered. Please sign up to create an account.",
+        };
       }
 
       let comparedPassword = await bcrypt.compare(
@@ -50,7 +54,9 @@ module.exports = {
       );
 
       if (!comparedPassword) {
-        throw { message: "Email is not registered. Please register to login." };
+        throw {
+          message: "Password is incorrect. Please try again.",
+        };
       } else {
         let jwtToken = jwt.sign(
           {
@@ -66,18 +72,19 @@ module.exports = {
       }
     } catch (e) {
       res.status(500).json(mongoDBErrorParser(e));
+      console.log("backend-------70");
     }
   },
 
   sendSMS: async (req, res) => {
     console.log("-------");
-    console.log(req.body);
+    console.log(req.body.friendsInfo.mobileNumber);
 
     try {
       const sentSMS = await client.messages.create({
-        body: "Hello",
+        body: `Thank you for subscribing to CatFacts ${req.body.friendsInfo.firstName}! Here is your daily CatFact... ${req.body.oneCatFact}`,
         from: "+14787969053",
-        to: "14128628882",
+        to: req.body.friendsInfo.mobileNumber,
       });
       console.log("Message Sent!");
       res.json(sentSMS);

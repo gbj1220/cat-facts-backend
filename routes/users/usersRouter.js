@@ -7,6 +7,7 @@ const {
   checkIfInputIsEmpty,
   checkForSymbolsMiddleWare,
   checkIfLoginIsEmpty,
+  checkForStrongPassword,
 } = require("../lib/validator");
 
 router.get("/", function (req, res, next) {
@@ -19,6 +20,12 @@ router.get("/get-cat-fact");
 
 router.post("/send-sms", sendSMS);
 
-router.post("/sign-up", checkIfInputIsEmpty, checkForSymbolsMiddleWare, signUp);
+router.post(
+  "/sign-up",
+  checkIfInputIsEmpty,
+  checkForSymbolsMiddleWare,
+  checkForStrongPassword,
+  signUp
+);
 
 router.post("/login", checkIfLoginIsEmpty, login);

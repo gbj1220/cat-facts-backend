@@ -60,20 +60,16 @@ const deleteFriendById = async (req, res) => {
     const foundUser = await User.findOne({
       email: req.body.email,
     });
+
     const userFriendsArray = foundUser.friends;
 
     const newFriendArray = userFriendsArray.filter((item) => {
-      // console.log(item !== req.params.id);
-      // console.log(item, req.params.id);
-      // console.log(typeof item);
-      // console.log(typeof req.params.id);
       if (item.toString() !== req.params.id) {
         return item;
       }
     });
-    console.log(newFriendArray);
+
     foundUser.friends = newFriendArray;
-    console.log(foundUser);
 
     await foundUser.save();
 

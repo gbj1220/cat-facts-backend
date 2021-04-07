@@ -1,4 +1,4 @@
-const { isEmpty, isEmail, matches } = require("validator");
+const { isEmpty, isEmail, matches, isStrongPassword } = require("validator");
 const mongoDBErrorHelper = require("./mongoDBErrorParser");
 
 const checkIfEmpty = (target) => {
@@ -19,6 +19,14 @@ const checkIfEmailFormat = (target) => {
 
 const checkForSymbol = (target) => {
   if (matches(target, /[!@#$%^&*()\[\],.?":;{}|<>]/g)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+const checkIfStrongPassword = (target) => {
+  if (isStrongPassword(target)) {
     return true;
   } else {
     return false;
@@ -99,8 +107,26 @@ const checkIfLoginIsEmpty = (req, res, next) => {
   }
 };
 
+const checkForStrongPassword = (req, res, next) => {
+  let errorObj = {};
+
+  const { password } = req.body;
+
+  if (!checkIfStrongPassword(password)) {
+    errorObj.password =
+      "Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, and at least 1 special symbol.";
+  }
+
+  if (Object.keys(errorObj).length > 0) {
+    res.status(500).json(mongoDBErrorHelper({ fuck: errorObj }));
+  } else {
+    next();
+  }
+};
+
 module.exports = {
   checkIfInputIsEmpty,
   checkForSymbolsMiddleWare,
   checkIfLoginIsEmpty,
+  checkForStrongPassword,
 };
